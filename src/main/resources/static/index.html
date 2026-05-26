@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SplitSmart - AI Expense Splitter</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+    <header>
+        <h1>💰 SplitSmart</h1>
+        <p>AI-Powered Group Expense Splitter</p>
+    </header>
+
+    <!-- GROUP SECTION -->
+    <section id="group-section" class="card">
+        <h2>Groups</h2>
+        <div class="row">
+            <input type="text" id="group-name" placeholder="Group name (e.g. Goa Trip)">
+            <button onclick="createGroup()">Create Group</button>
+        </div>
+        <div id="groups-list" class="list"></div>
+    </section>
+
+    <!-- MAIN APP (hidden until group selected) -->
+    <div id="main-app" style="display:none">
+
+        <div class="active-group-bar">
+            <span id="active-group-label">Active Group: </span>
+            <button class="btn-sm" onclick="closeGroup()">Switch Group</button>
+        </div>
+
+        <!-- MEMBERS -->
+        <section class="card">
+            <h2>Members</h2>
+            <div class="row">
+                <input type="text" id="member-name" placeholder="Member name">
+                <button onclick="addMember()">Add Member</button>
+            </div>
+            <div id="members-list" class="list"></div>
+        </section>
+
+        <!-- ADD EXPENSE -->
+        <section class="card">
+            <h2>Add Expense</h2>
+            <div class="form-grid">
+                <input type="text" id="exp-desc" placeholder="Description (e.g. Hotel)">
+                <input type="number" id="exp-amount" placeholder="Amount (₹)">
+                <select id="exp-category">
+                    <option value="">Select Category</option>
+                    <option>Food</option>
+                    <option>Travel</option>
+                    <option>Shopping</option>
+                    <option>Entertainment</option>
+                    <option>Utilities</option>
+                    <option>Other</option>
+                </select>
+                <select id="exp-paid-by"><option>-- Paid By --</option></select>
+            </div>
+            <div id="split-checkboxes" class="checkboxes"></div>
+            <button onclick="addExpense()" class="btn-full">Add Expense</button>
+        </section>
+
+        <!-- EXPENSES LIST -->
+        <section class="card">
+            <h2>Expenses</h2>
+            <div id="expenses-list" class="list"></div>
+        </section>
+
+        <!-- BALANCES & SETTLEMENTS -->
+        <section class="card">
+            <h2>Balances & Settlements</h2>
+            <button onclick="loadBalances()">Calculate Balances</button>
+            <button onclick="loadSettlements()">Show Who Pays Whom</button>
+            <div id="balances-list" class="list"></div>
+            <div id="settlements-list" class="list"></div>
+        </section>
+
+        <!-- AI INSIGHTS -->
+        <section class="card ai-card">
+            <h2>🤖 AI Spending Insights</h2>
+            <button onclick="getAIInsights()">Get AI Insights</button>
+            <div id="ai-result" class="ai-box"></div>
+        </section>
+
+    </div>
+</div>
+<script src="js/app.js"></script>
+</body>
+</html>
