@@ -1,6 +1,5 @@
 package com.splitsmart.ai;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.net.URI;
 import java.net.http.*;
@@ -9,12 +8,11 @@ import java.util.Map;
 @Service
 public class GeminiService {
 
-    @Value("${gemini.api.key}")
-    private String apiKey;
+    private String apiKey = "YOUR_GEMINI_API_KEY_HERE";
 
     public String getSpendingInsight(Map<String, Double> breakdown, double total) {
         if (apiKey.equals("YOUR_GEMINI_API_KEY_HERE")) {
-            return "Add your Gemini API key in application.properties to enable AI insights.";
+            return "AI insights disabled. Add a valid Gemini API key to enable.";
         }
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, Double> e : breakdown.entrySet()) {
@@ -33,7 +31,7 @@ public class GeminiService {
                     "gemini-2.0-flash:generateContent?key=" + apiKey;
             String body = String.format(
                     "{\"contents\":[{\"parts\":[{\"text\":\"%s\"}]}]}",
-                    prompt.replace("\"", "\\\"").replace("\n", "\\n"));
+                    prompt.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n"));
 
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
@@ -44,12 +42,22 @@ public class GeminiService {
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             String resp = response.body();
-            int start = resp.indexOf("\"text\": \"") + 9;
-            int end = resp.indexOf("\"", start);
-            if (start > 9 && end > start) {
-                return resp.substring(start, end).replace("\\n", "\n").replace("\\\"", "\"");
+
+            int textIdx = resp.indexOf("\"text\":");
+            if (textIdx == -1) return "AI unavailable. Response: " + resp.substring(0, Math.min(200, resp.length()));
+
+            int start = resp.indexOf("\"", textIdx + 7) + 1;
+            int end = start;
+            while (end < resp.length()) {
+                if (resp.charAt(end) == '"' && resp.charAt(end - 1) != '\\') break;
+                end++;
             }
-            return "Could not parse AI response.";
+
+            return resp.substring(start, end)
+                    .replace("\\n", "\n")
+                    .replace("\\\"", "\"")
+                    .replace("\\\\", "\\");
+
         } catch (Exception e) {
             return "AI unavailable: " + e.getMessage();
         }
